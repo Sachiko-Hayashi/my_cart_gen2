@@ -1,39 +1,27 @@
-import { useEffect, useState } from "react";
-import type { Schema } from "../amplify/data/resource";
-import { generateClient } from "aws-amplify/data";
 
-const client = generateClient<Schema>();
+import { useState } from "react";
+import BarcodeScanner from "./BarcodeScanner";
 
 function App() {
-  const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
+  const [codes, setCodes] = useState<string[]>([]);
 
-  useEffect(() => {
-    client.models.Todo.observeQuery().subscribe({
-      next: (data) => setTodos([...data.items]),
-    });
-  }, []);
-
-  function createTodo() {
-    client.models.Todo.create({ content: window.prompt("Todo content") });
-  }
+  const handleDetected = (code: string) => {
+    setCodes((prev) => [...prev, code]);
+  };
 
   return (
-    <main>
-      <h1>My todos</h1>
-      <button onClick={createTodo}>+ new</button>
+    <div style={{ padding: 20 }}>
+      <h2>バーコード読み取り</h2>
+
+      <BarcodeScanner onDetected={handleDetected} />
+
+      <h3>読み取ったコード</h3>
       <ul>
-        {todos.map((todo) => (
-          <li key={todo.id}>{todo.content}</li>
+        {codes.map((c, i) => (
+          <li key={i}>{c}</li>
         ))}
       </ul>
-      <div>
-        🥳 App successfully hosted. Try creating a new todo.
-        <br />
-        <a href="https://docs.amplify.aws/react/start/quickstart/#make-frontend-updates">
-          Review next step of this tutorial.
-        </a>
-      </div>
-    </main>
+    </div>
   );
 }
 
