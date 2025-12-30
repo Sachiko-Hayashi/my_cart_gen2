@@ -25,7 +25,7 @@ export default function BarcodeScanner({ onDetected }: Props) {
       controls = await reader.decodeFromVideoDevice(
         undefined,
         videoRef.current!,
-        (result , error , controls) => {
+        (result  ) => {
           if (result) {
             const code = result.getText();
 
